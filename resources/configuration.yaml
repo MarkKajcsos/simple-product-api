@@ -1,0 +1,17 @@
+---
+app:
+  port: 4000
+  host: "0.0.0.0"
+  name: "simple-pruduct-api"
+  version: "1.0.0"
+  environment: "TEST"
+  database:
+    name: "mongodb"
+    user: "user"
+    password: "1234"
+    baseUrl: "localhost://mongodb"
+    port: "5555"
+    collections:
+      product: "products"
+  datasources:
+    product: "test"

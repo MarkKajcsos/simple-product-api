@@ -1,0 +1,33 @@
+{
+  "name": "simple_product_api",
+  "version": "1.0.0",
+  "description": "Simple GraphQL product api in TypeScript, which can manage product and producer entities using MongoDB",
+  "main": "./dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsnd ./src/index.ts",
+    "dev2": "tsnd ./src/index2.ts",
+    "dev3": "tsnd ./src/index3.ts",
+    "foo": "tsnd ./test.ts"
+  },
+  "keywords": [],
+  "author": "Mark Kajcsos",
+  "license": "ISC",
+  "dependencies": {
+    "@graphql-tools/load-files": "^7.0.0",
+    "@graphql-tools/merge": "^9.0.3",
+    "@graphql-tools/schema": "^10.0.3",
+    "express": "^4.18.3",
+    "express-graphql": "^0.12.0",
+    "graphql": "^15.8.0",
+    "graphql-modules": "^2.3.0",
+    "js-yaml": "^4.1.0",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/js-yaml": "^4.0.9",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0"
+  }
+}
