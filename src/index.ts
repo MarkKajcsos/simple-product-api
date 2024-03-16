@@ -3,12 +3,30 @@ import { makeExecutableSchema } from '@graphql-tools/schema';
 import express from 'express';
 import { graphqlHTTP } from 'express-graphql';
 import { ApplicationContextFactory } from './application.context';
+import { Config } from './model/config/config';
 import { resolvers, typeDefs } from './schema';
-import { Config } from './utils/config/config';
+import MongoDBClient from './utils/client/mongodb.client';
 import { configFromYaml } from './utils/config/config.from.yaml';
 import { CONFIG_PATH, SERVICE_NAME, SERVICE_VERSION } from './utils/config/defaults';
 
+
 const app = express()
+
+// const connectToDAtabase = async () => {
+//   const client = new MongoClient(config.mongoDBConfig.url)
+//   let cachedConnection
+//   if(cachedConnection) return cachedConnection
+  
+//   try {
+//     const connection = await client.connect()    
+//     cachedConnection = connection
+//     return connection
+//   } catch(error) {
+//     console.error(error)
+//   }
+// }
+
+
 
 const config: Config = configFromYaml(CONFIG_PATH)
 config.app = Object.assign(
@@ -17,8 +35,9 @@ config.app = Object.assign(
     version: SERVICE_VERSION,
   },
   config.app
-)
-
+  )
+  
+MongoDBClient.getInstance(config.mongoDBConfig)
 
 const schema = makeExecutableSchema({ typeDefs, resolvers })
 

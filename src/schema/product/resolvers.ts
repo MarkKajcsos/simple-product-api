@@ -1,19 +1,19 @@
 export const resolvers = {
   Query: {
-    products: async (parent: any, args: any, context: any, info: any)  => {        
+    products: (parent: any, args: any, { dataSources }: any, info: any)  => {        
         try {
-            return context.dataSources.productService.products()
+            return  dataSources.productService.products()
         } catch (error) {
             throw error           
         }
     },
-    product: (parent: any, args: any, context: any, info: any) => {
+    product: (parent: any, args: any, { dataSources }: any, info: any) => {
         try {
-            console.log(args.id)
-            return context.dataSources.productService.product(args.id)
+            return dataSources.productService.product(args.id)
         } catch (error) {
             throw error           
         }
     }    
   },
+
 }

@@ -1,6 +1,6 @@
-import { ProducerModel } from "./producer"
+import { ProducerModel } from "."
 
-export type ProductModel = {
+export interface Product {
     _id: string
     vintage: string
     name: string

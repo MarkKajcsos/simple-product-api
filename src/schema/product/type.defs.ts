@@ -9,6 +9,13 @@ export const typeDefs = gql`
     producer: Producer!
   }
 
+  type ProductWithoutProducer {
+    _id: ID!
+    vintage: String!
+    name: String!
+    producerId: String!
+  }  
+
   input ProductInput {
     vintage: String!
     name: String!
@@ -17,7 +24,7 @@ export const typeDefs = gql`
   }
 
   type Query {
-    products: [Product]
+    products: [ProductWithoutProducer]
     product(id: String!): Product
     productByProducer(id: ID!): [Product]
   }

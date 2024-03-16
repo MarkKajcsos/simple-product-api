@@ -9,7 +9,7 @@ app:
     name: "mongodb"
     user: "user"
     password: "1234"
-    baseUrl: "localhost://mongodb"
+    url: "localhost://mongodb"
     port: "5555"
     collections:
       product: "products"

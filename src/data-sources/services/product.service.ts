@@ -1,8 +1,8 @@
-import { ProductModel } from "../models/product"
+import { Product } from "../models/product"
 
 
 export interface ProductService {
-    products(): ProductModel[]
-    product(id: string): ProductModel | null
-    productByProducer(ids: string[]): Omit<ProductModel, 'producer'>[]
+    products(): Product[]
+    product(id: string): Product | null
+    productByProducer(ids: string[]): Omit<Product, 'producer'>[]
 }
