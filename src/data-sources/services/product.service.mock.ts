@@ -1,8 +1,7 @@
-import { ProductService } from ".";
 import { Product } from "../models";
 
 
-export class ProductMockService implements ProductService {
+export class ProductMockService {
 
 
     private dataset: Product[] = [

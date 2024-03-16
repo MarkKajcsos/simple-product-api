@@ -1,17 +1,17 @@
-import { MongoClient } from 'mongodb';
+import mongoose, { Connection } from 'mongoose';
 import { MongoDBConfig } from '../../model/config';
 
 
 export class MongoDBClient {
     private static client: MongoDBClient
-    private mongoClient: MongoClient | null = null
+    private connection: Connection | null = null
     private readonly config: MongoDBConfig
 
     constructor(config: MongoDBConfig) {
         this.config = config
     }
 
-    static async getInstance(config: MongoDBConfig): Promise<MongoDBClient> {
+    public static async getInstance(config: MongoDBConfig): Promise<MongoDBClient> {
         if(!MongoDBClient.client){
             MongoDBClient.client = new MongoDBClient(config)
             await MongoDBClient.client.connect()
@@ -19,16 +19,16 @@ export class MongoDBClient {
         return MongoDBClient.client
     }
 
-    static async closeInstance(): Promise<void> {
+    public static async closeInstance(): Promise<void> {
         return await MongoDBClient.client.close()
     }
 
-    private async connect(): Promise<void> {
+    async connect(): Promise<void> {
         console.log('MongoDBClient.connect: Connecting to MongoDB ...');
         try {
-            let mongoClient = new MongoClient(this.config.url);
-            this.mongoClient = await mongoClient.connect();
-            if (this.mongoClient === undefined) {
+            mongoose.connect(this.config.url);
+            this.connection = mongoose.connection;
+            if (this.connection === undefined) {
                 throw new Error('DbClient: invalid database configuration please check the documentation')
             }            
             console.log('MongoDBClient.connect: Connected');
@@ -39,13 +39,13 @@ export class MongoDBClient {
         }
     }
 
-    public async close(): Promise<void> {
-        if(MongoDBClient.client?.mongoClient){
+    async close(): Promise<void> {
+        if(this.connection){
             console.log('MongoDBClient.close: closing connection...')
-            await MongoDBClient.client.mongoClient.close()
+            await this.connection.close()
             console.log('MongoDBClient.close: Connection closed')
         } else {
-            console.log('MongoDBClient.close: MongoClient instance not found.')
+            console.log('MongoDBClient.close: No connectin found.')
         }
     }
 }

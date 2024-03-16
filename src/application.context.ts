@@ -1,22 +1,17 @@
 import {
-  ProductMockService,
-  ProductService
+  ProductServiceMongodb
 } from './data-sources/services'
 
 export type ApplicationContext = {
   dataSources: {
-    productService: ProductService
+    productService: ProductServiceMongodb
   }
 }
 
-export class ApplicationContextFactory {
-  // TODO - change config type to Config
-  static getApplicationContext(config: any): ApplicationContext {
-    return {
-      dataSources: {
-        productService: new ProductMockService(),
-        // productService: ProductServiceFactory.getService(config),
-      },
-    }
+export const getApplicationContext = (): ApplicationContext => {
+  return {
+    dataSources: {
+      productService: new ProductServiceMongodb()
+    },
   }
 }

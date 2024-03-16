@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  mongodb:
+    container_name: mongodb
+    image: mongo:7.0.6-jammy
+    networks:
+      - express-mongo    
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    # command: mongosh --host mongodb --eval "db = db.getSiblingDB('db'); db.createCollection('product');"
+
+
+  api:
+    container_name: express_server
+    build: ./
+    restart: always
+    ports:
+      - "3000:3000"
+    # volumes:
+    #   - .:/usr/src/app
+    networks:
+      - express-mongo      
+    depends_on:
+      - mongodb
+
+volumes:
+  mongodb_data:
+
+networks:
+  express-mongo:

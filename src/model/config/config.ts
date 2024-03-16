@@ -9,5 +9,5 @@ export enum ENVIRONMENT {
 
 export interface Config {
   app: AppConfig
-  mongoDBConfig: MongoDBConfig
+  mongoDB: MongoDBConfig
 }
