@@ -32,18 +32,24 @@ docker volume prune
 Check the disk space on your Docker host.
 docker system df
 
-## MongoDb configuration
+## Thinks ToDo and some known fact that could be improved
+
+### MongoDb configuration
 
 - replicaset (to be able to use session and transactions for more secure operations)
 - create user with password (envoveld configuration file and env variable modifications)
 
-## Logging
+### Logging
 
 - set global logger object
 - costumize logger format
 - set midleware logging
 
-## GraphQl
+### GraphQl
 
 - make filter type and implement related changes for Product filtering (could replace 'product', 'productByProducerId' and any new filter oriented query)
 - solve 'products' query to return only with product items without producer field (currently solved by created new type, but this is not nice)
+
+### General
+
+- create custom Error interfaces
