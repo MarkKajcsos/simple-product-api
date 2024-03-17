@@ -1,0 +1,30 @@
+[
+  {
+    _id: ObjectId('65f6e520610a2d37f8329875'),
+    name: 'Puli',
+    vintage: '1998',
+    producer: {
+      name: 'Varga',
+      country: 'HU',
+      region: 'Villany',
+      _id: ObjectId('65f6e520610a2d37f8329873'),
+      __v: 0
+    },
+    producerId: ObjectId('65f6e520610a2d37f8329873'),
+    __v: 0
+  },
+  {
+    _id: ObjectId('65f6e53e610a2d37f832987a'),
+    name: 'Vizsla',
+    vintage: '2000',
+    producer: {
+      name: 'Szabo pince',
+      country: 'HU',
+      region: 'Villany',
+      _id: ObjectId('65f6e53e610a2d37f8329878'),
+      __v: 0
+    },
+    producerId: ObjectId('65f6e53e610a2d37f8329878'),
+    __v: 0
+  }
+]

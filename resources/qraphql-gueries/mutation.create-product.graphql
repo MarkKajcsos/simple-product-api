@@ -1,0 +1,22 @@
+mutation {
+  createProducts(
+    products: [
+      {
+        name: "Puli"
+        vintage: "1998"
+        producer: { name: "Varga", country: "HU", region: "Villany" }
+      }
+    ]
+  ) {
+    _id
+    name
+    vintage
+    producerId
+    producer {
+      _id
+      name
+      region
+      country
+    }
+  }
+}

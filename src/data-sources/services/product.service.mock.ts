@@ -7,7 +7,7 @@ export class ProductMockService {
     private dataset: Product[] = [
             {
                 _id: "1",
-                vintage: "Pigy boy",
+                vintage: "I see you",
                 name: "Stefan",
                 producerId: "1",
                 producer: {
@@ -19,7 +19,7 @@ export class ProductMockService {
             },        
             {
                 _id: "2",
-                vintage: "Pigy boy",
+                vintage: "Lucky loop",
                 name: "Stefan",
                 producerId: "1",
                 producer: {

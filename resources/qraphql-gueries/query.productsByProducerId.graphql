@@ -1,0 +1,8 @@
+query {
+  productsByProducerId(id: "<your producerId._id>") {
+    _id
+    name
+    vintage
+    producerId
+  }
+}

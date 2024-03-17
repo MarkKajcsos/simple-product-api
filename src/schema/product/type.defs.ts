@@ -19,19 +19,23 @@ export const typeDefs = gql`
   input ProductInput {
     vintage: String!
     name: String!
-    producerId: String! 
     producer: ProducerInput!
   }
 
+  type DeletionResult {
+    success: Boolean!
+    deletedCount: Int
+    errors: [String]
+  }  
+
   type Query {
-    products: [ProductWithoutProducer]
-    product(id: String!): Product
-    productByProducer(id: ID!): [Product]
+    productById(id: ID!): Product
+    productsByProducerId(id: ID!): [ProductWithoutProducer]
   }
 
   type Mutation {
-    createProducts(input: [ProductInput!]): [Product]
-    updateProduct(input: ProductInput): Product
-    deleteProducts(ids: [ID!]): [Product]
+    createProducts(products: [ProductInput!]): [Product]
+    updateProduct(product: ProductInput): Product
+    deleteProducts(ids: [ID!]): DeletionResult!
   }  
 `

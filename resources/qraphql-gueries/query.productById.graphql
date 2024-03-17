@@ -1,0 +1,14 @@
+query {
+  productById(id: "<your product._id>") {
+    _id
+    name
+    vintage
+    producerId
+    producer {
+      _id
+      name
+      country
+      region
+    }
+  }
+}

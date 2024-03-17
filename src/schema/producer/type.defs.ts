@@ -9,7 +9,6 @@ export const typeDefs = gql`
     }
 
     input ProducerInput {
-        _id: String!
         name: String!
         country: String
         region: String

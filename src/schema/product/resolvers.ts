@@ -1,19 +1,24 @@
 export const resolvers = {
   Query: {
-    products: (parent: any, args: any, { dataSources }: any, info: any)  => {        
+    productById: (parent: any, args: any, { dataSources }: any, info: any) => {
         try {
-            return  dataSources.productService.products()
+            return dataSources.productService.getProductById(args.id)
         } catch (error) {
             throw error           
         }
     },
-    product: (parent: any, args: any, { dataSources }: any, info: any) => {
+    productsByProducerId: (parent: any, args: any, { dataSources }: any, info: any) => {
         try {
-            return dataSources.productService.product(args.id)
+            return dataSources.productService.getProductsByProducerId(args.id)
         } catch (error) {
             throw error           
         }
-    }    
+    }        
   },
+  Mutation: {
+    createProducts: async (parent: any, args: any, { dataSources }: any, info: any) => {
+        return await dataSources.productService.createProducts(args.products)
+    }
+  }
 
 }
