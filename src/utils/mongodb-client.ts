@@ -1,11 +1,11 @@
 
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
 export const connecToMongoDb = async () => {
-  mongoose.connect('mongodb://mongodb:27017/public');
-  const db = mongoose.connection;
-  db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+  mongoose.connect('mongodb://mongodb:27017/public')
+  const db = mongoose.connection
+  db.on('error', console.error.bind(console, 'MongoDB connection error:'))
   db.once('open', function() {
-    console.log('Connected to MongoDB');
-  });
+    console.log('Connected to MongoDB')
+  })
 }

@@ -1,13 +1,13 @@
 // index.ts
-import { makeExecutableSchema } from '@graphql-tools/schema';
-import express from 'express';
-import { graphqlHTTP } from 'express-graphql';
-import { getApplicationContext } from './application.context';
-import { Config } from './model/config/config';
-import { resolvers, typeDefs } from './schema';
-import MongoDBClient from './utils/client/mongodb.client';
-import { configFromYaml } from './utils/config/config.from.yaml';
-import { CONFIG_PATH, SERVICE_NAME, SERVICE_VERSION } from './utils/config/defaults';
+import { makeExecutableSchema } from '@graphql-tools/schema'
+import express from 'express'
+import { graphqlHTTP } from 'express-graphql'
+import { getApplicationContext } from './application.context'
+import { Config } from './model/config/config'
+import { resolvers, typeDefs } from './schema'
+import MongoDBClient from './utils/client/mongodb.client'
+import { configFromYaml } from './utils/config/config.from.yaml'
+import { CONFIG_PATH, SERVICE_NAME, SERVICE_VERSION } from './utils/config/defaults'
 
 const config: Config = configFromYaml(CONFIG_PATH)
 config.app = Object.assign(
@@ -16,7 +16,7 @@ config.app = Object.assign(
     version: SERVICE_VERSION,
   },
   config.app
-  )
+)
 
 
 const app = express()
@@ -31,12 +31,12 @@ app.use('/graphql', graphqlHTTP({
   schema: schema,
   context: getApplicationContext(),
   graphiql: true,
-}));
+}))
 
 // Start the server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000
 app.listen(PORT, async () => {
   //TODO: delete
   await dbClient.connect()
-  console.log(`Server is running at http://localhost:${PORT}/graphql`);
-});
+  console.log(`Server is running at http://localhost:${PORT}/graphql`)
+})

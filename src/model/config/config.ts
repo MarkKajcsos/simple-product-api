@@ -1,4 +1,4 @@
-import { AppConfig, MongoDBConfig } from "."
+import { AppConfig, MongoDBConfig } from '.'
 
 export enum ENVIRONMENT {
   PRODUCTION = 'PRODUCTION',

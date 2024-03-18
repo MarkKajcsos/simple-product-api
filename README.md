@@ -38,6 +38,8 @@ docker system df
 
 - replicaset (to be able to use session and transactions for more secure operations)
 - create user with password (envoveld configuration file and env variable modifications)
+- TODO - move schamas and models to model folder
+- TODO - move service interface into onther file
 
 ### Logging
 

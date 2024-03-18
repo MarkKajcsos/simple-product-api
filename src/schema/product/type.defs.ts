@@ -32,7 +32,7 @@ export const typeDefs = gql`
 
   type DeletionResult {
     success: Boolean!
-    deletedCount: Int!
+    deleteCount: Int!
   }  
 
   type Query {
@@ -44,5 +44,6 @@ export const typeDefs = gql`
     createProducts(products: [ProductCreateInput!]): [Product]
     updateProduct(product: ProductUpdateInput!): Product
     deleteProducts(ids: [ID!]): DeletionResult!
+    startImport(): Boolean!
   }  
 `
