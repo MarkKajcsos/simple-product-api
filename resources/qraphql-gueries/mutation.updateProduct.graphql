@@ -1,0 +1,22 @@
+mutation {
+  updateProduct(
+    product: {
+      _id: "65f7788ffeaedbe1b725d2d3"
+      producerId: "65f7788ffeaedbe1b725d2d1"
+      name: "Puli"
+      vintage: "2022"
+      producer: { name: "Varga", country: "HU/CAS", region: "Villany" }
+    }
+  ) {
+    _id
+    name
+    vintage
+    producerId
+    producer {
+      _id
+      name
+      region
+      country
+    }
+  }
+}

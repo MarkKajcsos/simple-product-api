@@ -32,7 +32,7 @@ export const typeDefs = gql`
 
   type DeletionResult {
     success: Boolean!
-    deletedCount: Int
+    deletedCount: Int!
   }  
 
   type Query {

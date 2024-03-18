@@ -75,7 +75,7 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
       try {
         // Upsert Producer item (even the Product new, might producer data exists)
         const producerFilter = { name: product.producer.name }
-        const dbProducer = await Producer.findByIdAndUpdate(
+        const dbProducer = await Producer.findOneAndUpdate(
           producerFilter, product.producer, { upsert: true, returnDocument: 'after' }
         )
 
@@ -210,14 +210,24 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
      */
     async deleteProducts(ids: string[]): Promise<{success: boolean, deleteCount: number}> {
       try {
-        // Get producer ids
-        const producerIds = Product.find({_id:{$in:ids}}, ).select('producerId')
-        // Delete Products by ids argument
-        const res = await Product.deleteMany({_id:{$in:ids}})
-        // Delete Producers by producerIds
-        await Producer.deleteMany({_id:{$in:producerIds}})
+        // Get producers' id
+        const products = await Product.find({_id:{$in:ids}})    
+        const producerIds = products.map(product => product.producerId.toString());
+        console.debug(producerIds)
 
-        return { success: res.acknowledged, deleteCount: res.deletedCount }
+        // Delete Products by ids argument
+        const deleteResult = await Product.deleteMany({_id:{$in:ids}})
+
+        // Delete Producers by producerIds if there aren't reference from 'products' collection
+        for(let id of producerIds){
+          const products = await Product.find({producerI: id})
+          if(products.length == 0){
+            await Producer.deleteOne({id})
+          }
+        }
+        const result = { success: deleteResult.acknowledged, deleteCount: deleteResult.deletedCount }
+        console.debug(result)
+        return result
       } catch (error) {
         throw new Error(`ProductServiceMongodb.deleteProducts failed: ${error}`)
       }  
