@@ -44,6 +44,6 @@ export const typeDefs = gql`
     createProducts(products: [ProductCreateInput!]): [Product]
     updateProduct(product: ProductUpdateInput!): Product
     deleteProducts(ids: [ID!]): DeletionResult!
-    startImport(): Boolean!
+    productSyncronization(): Boolean!
   }  
 `

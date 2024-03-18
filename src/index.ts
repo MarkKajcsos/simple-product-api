@@ -3,20 +3,10 @@ import { makeExecutableSchema } from '@graphql-tools/schema'
 import express from 'express'
 import { graphqlHTTP } from 'express-graphql'
 import { getApplicationContext } from './application.context'
-import { Config } from './model/config/config'
 import { resolvers, typeDefs } from './schema'
 import MongoDBClient from './utils/client/mongodb.client'
-import { configFromYaml } from './utils/config/config.from.yaml'
-import { CONFIG_PATH, SERVICE_NAME, SERVICE_VERSION } from './utils/config/defaults'
+import config from './utils/config'
 
-const config: Config = configFromYaml(CONFIG_PATH)
-config.app = Object.assign(
-  {
-    name: SERVICE_NAME,
-    version: SERVICE_VERSION,
-  },
-  config.app
-)
 
 
 const app = express()

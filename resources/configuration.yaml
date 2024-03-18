@@ -15,3 +15,5 @@ mongoDB:
   db: prod
   url: "mongodb://mongodb:27017/public"
   port: "27017"
+
+productCsvUrl: "https://api.frw.co.uk/feeds/all_listings.csv"

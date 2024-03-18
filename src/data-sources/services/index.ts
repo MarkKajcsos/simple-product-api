@@ -1,3 +1,2 @@
-export * from './product.service.mock'
-export * from './product.service.mongodb'
+export * from './product.service.mongodb';
 

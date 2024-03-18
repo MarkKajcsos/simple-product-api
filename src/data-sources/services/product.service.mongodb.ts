@@ -1,17 +1,9 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable no-console */
 import { IProduct, Producer, Product } from '../models/product.schema.model'
+import { productSyncronization } from './product-importer.service.mongodb'
+import { IProductService } from './product.service'
 
-interface IProductService<T> {
-  upsertProductAndProducer(product: T): Promise<T>
-  createProducts(products: T[]): Promise<T[]>
-  createProductsBySession(products: T[]): Promise<T[]>
-  getProductById(id: string): Promise<T | null>
-  getProductsByProducerId(producerId: string): Promise<T[]>
-  updateProduct(product: T): Promise<T | null>
-  deleteProducts(ids: string[]): Promise<boolean | any>
-  startImport(): Promise<boolean>
-}
 
 
 export class ProductServiceMongodb implements IProductService<IProduct> {
@@ -73,7 +65,7 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
    */
   async createProducts(products: IProduct[]): Promise<IProduct[]> {
     try {      
-      const results: unknown[] = []
+      const results: IProduct[] = []
       for(const item of products){
         const newItem = await this.upsertProductAndProducer(item)
         results.push(newItem)
@@ -209,8 +201,8 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
     }  
   }    
 
-  async startImport(): Promise<boolean> {
+  async productSyncronization(): Promise<boolean> {
+    productSyncronization()
     return true
-    throw new Error('Method not implemented.')
   }
 }

@@ -10,4 +10,5 @@ export enum ENVIRONMENT {
 export interface Config {
   app: AppConfig
   mongoDB: MongoDBConfig
+  productCsvUrl: string
 }

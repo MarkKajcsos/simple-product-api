@@ -1,24 +1,24 @@
 export const resolvers = {
   Query: {
-    productById: (parent: any, args: any, { dataSources }: any, info: any) => {
+    productById: (parent: any, args: any, { dataSources }: any) => {
       return dataSources.productService.getProductById(args.id)
     },
-    productsByProducerId: (parent: any, args: any, { dataSources }: any, info: any) => {
+    productsByProducerId: (parent: any, args: any, { dataSources }: any) => {
       return dataSources.productService.getProductsByProducerId(args.id)
     }        
   },
   Mutation: {
-    createProducts: async (parent: any, args: any, { dataSources }: any, info: any) => {
+    createProducts: async (parent: any, args: any, { dataSources }: any) => {
       return await dataSources.productService.createProducts(args.products)
     },
-    updateProduct: async (parent: any, args: any, { dataSources }: any, info: any) => {
+    updateProduct: async (parent: any, args: any, { dataSources }: any) => {
       return await dataSources.productService.updateProduct(args.product)
     },
-    deleteProducts: async (parent: any, args: any, { dataSources }: any, info: any) => {
+    deleteProducts: async (parent: any, args: any, { dataSources }: any) => {
       return await dataSources.productService.deleteProducts(args.ids)
     },
-    startImport: async (parent: any, args: any, { dataSources }: any, info: any) => {
-      return await dataSources.productService.deleteProducts(args.ids)
+    productSyncronization: async (parent: any, args: any, { dataSources }: any) => {
+      return await dataSources.productService.productSyncronization()
     }
   }
 
