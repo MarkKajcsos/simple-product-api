@@ -6,5 +6,4 @@ export interface IProductService<T> {
   getProductsByProducerId(producerId: string): Promise<T[]>
   updateProduct(product: T): Promise<T | null>
   deleteProducts(ids: string[]): Promise<boolean | any>
-  productSyncronization(): Promise<boolean>
 }

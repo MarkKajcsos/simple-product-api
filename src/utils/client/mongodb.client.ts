@@ -1,5 +1,6 @@
 import mongoose, { Connection } from 'mongoose'
 import { MongoDBConfig } from '../../model/config'
+import logger from '../logger'
 
 
 export class MongoDBClient {
@@ -24,28 +25,28 @@ export class MongoDBClient {
   }
 
   async connect(): Promise<void> {
-    console.log('MongoDBClient.connect: Connecting to MongoDB ...')
+    logger.info('MongoDBClient.connect: Connecting to MongoDB ...')
     try {
       mongoose.connect(this.config.url)
       this.connection = mongoose.connection
       if (this.connection === undefined) {
         throw new Error('DbClient: invalid database configuration please check the documentation')
       }            
-      console.log('MongoDBClient.connect: Connected')
+      logger.info('MongoDBClient.connect: Connected')
     } catch (error) {
       const msg = `MongoDBClient.connect: Connection failed! - ${error}`
-      console.error(msg)
+      logger.error(msg)
       throw new Error(msg)
     }
   }
 
   async close(): Promise<void> {
     if(this.connection){
-      console.log('MongoDBClient.close: closing connection...')
+      logger.info('MongoDBClient.close: closing connection...')
       await this.connection.close()
-      console.log('MongoDBClient.close: Connection closed')
+      logger.info('MongoDBClient.close: Connection closed')
     } else {
-      console.log('MongoDBClient.close: No connectin found.')
+      logger.info('MongoDBClient.close: No connectin found.')
     }
   }
 }

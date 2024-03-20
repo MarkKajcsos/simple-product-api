@@ -1,4 +1,4 @@
-import { AppConfig, MongoDBConfig } from '.'
+import { AppConfig, ImportConfig as ImporterConfig, MongoDBConfig } from '.'
 
 export enum ENVIRONMENT {
   PRODUCTION = 'PRODUCTION',
@@ -10,5 +10,5 @@ export enum ENVIRONMENT {
 export interface Config {
   app: AppConfig
   mongoDB: MongoDBConfig
-  productCsvUrl: string
+  importer: ImporterConfig
 }

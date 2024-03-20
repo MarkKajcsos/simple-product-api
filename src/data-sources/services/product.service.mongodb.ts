@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable no-console */
+import logger from '../../utils/logger'
 import { IProduct, Producer, Product } from '../models/product.schema.model'
-import { productSyncronization } from './product-importer.service.mongodb'
 import { IProductService } from './product.service'
 
 
@@ -9,48 +8,28 @@ import { IProductService } from './product.service'
 export class ProductServiceMongodb implements IProductService<IProduct> {
 
   /**
-   * Check Prouduct item existence based on unique identifiers.
-   *
-   * @param product
-   * @returns Product | null.
-   */
-  async isProductExist(product: IProduct): Promise<IProduct | null> {
-    try {
-      const dbProduct = await Product.findOne({
-        name: product.name,
-        vintage: product.vintage,
-        producerName: product.name
-      })
-      return dbProduct
-    } catch (error) {
-      throw new Error(`ProductServiceMongodb.isProductExist failed: ${error}`)
-    }
-  }
-
-  /**
    * Save single Product with containing Producer item.
    *
    * @param product 
    * @returns Created product items.
    */
-  async upsertProductAndProducer(product: IProduct): Promise<IProduct> {
+  async upsertProductAndProducer(product: any): Promise<IProduct> {
     try {
-      // Upsert Producer item (even the Product new, might producer data exists)
+      // Upsert Producer item
       const producerFilter = { name: product.producer.name }
       const dbProducer = await Producer.findOneAndUpdate(
         producerFilter, product.producer, { upsert: true, returnDocument: 'after' }
       )
+      logger.debug(`New Producer stored in db: ${dbProducer}`)
 
-      // Set Product item with updated 'producerId' and 'producer' fields
-
-        
       // // Upsert Product item
       const productFilter = { name: product.name, vintage: product.vintage, producerId: dbProducer?._id }
       const updateProduct = { ...product, producerId: dbProducer._id, producer: dbProducer }
       const dbProduct = await Product.findOneAndUpdate(
         productFilter, updateProduct, { upsert: true, returnDocument: 'after' }
       )
-      console.debug(dbProduct)
+
+      logger.debug(`New Product stored in db: ${dbProduct}`)
       return dbProduct
     } catch (error) {
       throw new Error(`ProductServiceMongodb.upsertProductAndProducer failed: ${error}`)
@@ -63,9 +42,9 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
    * @param products 
    * @returns Created product items.
    */
-  async createProducts(products: IProduct[]): Promise<IProduct[]> {
+  public async createProducts(products: any[]): Promise<any[]> {
     try {      
-      const results: IProduct[] = []
+      const results: any[] = []
       for(const item of products){
         const newItem = await this.upsertProductAndProducer(item)
         results.push(newItem)
@@ -178,7 +157,7 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
       // Get producers' id
       const products = await Product.find({ _id:{ $in:ids } })    
       const producerIds = products.map(product => product.producerId.toString())
-      console.debug(producerIds)
+      logger.debug(producerIds)
 
       // Delete Products by ids argument
       const deleteResult = await Product.deleteMany({ _id:{ $in:ids } })
@@ -186,23 +165,20 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
       // Delete Producers by producerIds if there aren't reference from 'products' collection
       for(const id of producerIds){
         const products = await Product.find({ producerId: id })         
-        console.debug(id) 
-        console.debug(products) 
+        logger.debug(id) 
+        logger.debug(products) 
         if(products != null && products.length === 0){
-          console.debug(`No more prodod with producerId: ${id}`) 
+          logger.debug(`No more prodod with producerId: ${id}`) 
           await Producer.deleteOne({ id })
         }
       }
       const result = { success: deleteResult.acknowledged, deleteCount: deleteResult.deletedCount }
-      console.debug(result)
+      logger.debug(result)
       return result
     } catch (error) {
       throw new Error(`ProductServiceMongodb.deleteProducts failed: ${error}`)
     }  
   }    
 
-  async productSyncronization(): Promise<boolean> {
-    productSyncronization()
-    return true
-  }
+
 }

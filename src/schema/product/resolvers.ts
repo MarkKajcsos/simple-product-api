@@ -18,7 +18,7 @@ export const resolvers = {
       return await dataSources.productService.deleteProducts(args.ids)
     },
     productSyncronization: async (parent: any, args: any, { dataSources }: any) => {
-      return await dataSources.productService.productSyncronization()
+      return await dataSources.productImporter.startImport()
     }
   }
 

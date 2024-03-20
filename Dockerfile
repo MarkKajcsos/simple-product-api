@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci
+RUN npm ci --only=production
 RUN npm install -g nodemon
 
 # Copy the rest of the application code
@@ -19,6 +19,9 @@ RUN npm run build
 
 # Expose the port the app runs on
 EXPOSE 3000
+
+# Set user
+USER node
 
 # Command to run the app
 CMD [ "npm", "run", "dev" ]

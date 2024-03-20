@@ -1,57 +1,83 @@
-{
-"log-driver": "json-file",
-"log-opts": {
-"max-size": "10m",
-"max-file": "3",
-"labels": "production_status",
-"env": "os,customer"
-}
-}
+# Simple Product Api
 
-{
-"log-driver": "local",
-"log-opts": {
-"max-size": "10m"
-}
-}
+# Intro
 
-{
-"log-driver": "json-file",
-"log-opts": {
-"max-size": "10m",
-"max-file": "3"
-}
-}
+Short description: Build a simple GraphQL product api in TypeScript, which can manage product and producer entities using MongoDB.
 
-docker run \
- --log-driver local --log-opt max-size=10m \
- alpine echo hello world
+@Side note: Current repo made as an interview excercise.
 
-docker volume prune
+## Preparation
 
-Check the disk space on your Docker host.
-docker system df
+- Download current repo
 
-## Thinks ToDo and some known fact that could be improved
+```bash
+git clone https://github.com/MarkKajcsos/simple-product-api.git
+```
 
-### MongoDb configuration
+## Run
 
-- replicaset (to be able to use session and transactions for more secure operations)
-- create user with password (envoveld configuration file and env variable modifications)
-- TODO - move schamas and models to model folder
-- TODO - move service interface into onther file
+#### Build and start
 
-### Logging
+- Go to root folder of the project
+- Run the following command to build images and start containers
 
-- set global logger object
-- costumize logger format
-- set midleware logging
+```bash
+docker-compose up --build
+```
 
-### GraphQl
+#### Open Graphql viewer
 
-- make filter type and implement related changes for Product filtering (could replace 'product', 'productByProducerId' and any new filter oriented query)
-- solve 'products' query to return only with product items without producer field (currently solved by created new type, but this is not nice)
+- After both (mongodb and single_product_api) started, open [http://localhost/graphql](http://localhost/graphql)
+- You can find and try out some sample query and mutation from [resources](./resources/) folder.
+
+#### MongoDB inspection
+
+- Run the following command to access mongodb docker container.
+
+```bash
+docker exec -it mongodb mongosh
+```
+
+- Change the db to _public_
+
+```bash
+use public
+```
+
+- There are two collection in _public_ collection: _products_ and _producers_
+
+---
+
+## Thinks that could be improved
+
+#### Docker
+
+- Change command in Docker file from 'npm run dev' to 'npm start'
+  Currently the _single_product_api_ run by _nodemon_.
+- Set enviroment variable instead of store all settings in [configuration](./resources/configuration.yaml) file.
+
+#### Express, NodeJs
+
+- Handle special process events like []
+- Advanced setup of Express server.
+
+#### MongoDb
+
+- Find solution to load _producer_ doc into Product.producer field witout data duplication. The _polulate_ and _aggregate_ functions have been tried out without success.
+- Prepare replicaset of mongodb instances (to be able to use session and transactions for more secure operations)
+- Create new db user with password (envoveld configuration file and env variable modifications)
+
+#### Logging
+
+- Set global logger object
+- Costumize logger output format
+- Set midleware logging
+
+#### GraphQl
+
+- Make filter type and implement related changes for Product filtering (could replace 'product', 'productByProducerId' and any new filter oriented query)
+- Solve 'productsByProducerId' query to return only with product items without producer field (currently solved by created new type (_ProductWithoutProducer_) in schema, but this is not nice)
 
 ### General
 
-- create custom Error interfaces
+- Create custom Error interfaces and extend to be used at different places.
