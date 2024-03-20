@@ -24,7 +24,7 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
 
       // // Upsert Product item
       const productFilter = { name: product.name, vintage: product.vintage, producerId: dbProducer?._id }
-      const updateProduct = { ...product, producerId: dbProducer._id, producer: dbProducer }
+      const updateProduct = { ...product, producerId: dbProducer._id } // TOASK - should exlude product.producer??
       const dbProduct = await Product.findOneAndUpdate(
         productFilter, updateProduct, { upsert: true, returnDocument: 'after' }
       )
@@ -79,7 +79,7 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
         const newProduct = { 
           ...product,
           producerId: newProducer[0]._id,
-          producer: newProducer
+          // producer: newProducer
         }
 
         // Create new Product item
@@ -115,7 +115,23 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
   }
 
   /**
+   * Get simple Producer by id.
+   *
+   * @param id 
+   * @returns Producer.
+   */
+  async getProducerById(id: string): Promise<IProduct | null> { 
+    try {
+      return await Producer.findById(id)
+    } catch (error) {
+      throw new Error(`ProductServiceMongodb.getProducerById failed: ${error}`)
+    }     
+
+  }
+
+  /**
    * Get list of Product filtered by 'producerId'.
+   * Doesn't need to attach the producer doc to product.producer field.
    *
    * @param producerId 
    * @returns Product[].
@@ -129,8 +145,9 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
   }
 
   /**
-   * Update Product related Producer
-   * Id Product not exist then current function doesn't create item, but return null.
+   * Update Product related Producer.
+   * Assumed that -> client attach the _id field of product and producer.
+   * If product with given _id not exists then current function doesn't create new doc, but return null.
    *
    * @param product 
    * @returns 

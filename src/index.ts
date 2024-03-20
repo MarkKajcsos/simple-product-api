@@ -80,8 +80,7 @@ process.on('unhandledRejection', (reason: unknown | null | undefined, promise: P
 })
 
 // Start the server
-app.listen(async () => {
-  //TODO: delete
+app.listen(config.app.port, async () => {
   await dbClient.connect()
   console.log(`Server is running at http://${config.app.host}:${config.app.port}/graphql`)
 })

@@ -1,10 +1,15 @@
 export const resolvers = {
-  Query: {
-    productById: (parent: any, args: any, { dataSources }: any) => {
-      return dataSources.productService.getProductById(args.id)
+  Product: {
+    producer: async (parent: any, args: any, { dataSources }: any) => {
+      return await dataSources.productService.getProducerById(parent.producerId)
     },
-    productsByProducerId: (parent: any, args: any, { dataSources }: any) => {
-      return dataSources.productService.getProductsByProducerId(args.id)
+  },
+  Query: {
+    productById: async (parent: any, args: any, { dataSources }: any) => {
+      return await dataSources.productService.getProductById(args.id)
+    },
+    productsByProducerId: async (parent: any, args: any, { dataSources }: any) => {
+      return await dataSources.productService.getProductsByProducerId(args.id)
     }        
   },
   Mutation: {

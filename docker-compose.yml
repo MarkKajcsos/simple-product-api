@@ -18,7 +18,7 @@ services:
     ports:
       - "3000:3000"
     # volumes:
-    #   - ./src:/usr/src/app/src
+    #   - "//c:/Users/ASUS/source/simple_product_api/src:/usr/src/app/src"
     networks:
       - express-mongo      
     depends_on:
