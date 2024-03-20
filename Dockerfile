@@ -14,8 +14,8 @@ RUN npm install -g nodemon
 # Copy the rest of the application code
 COPY . .
 
-# Build the Node.js app
-RUN npm run build
+# Build the Node.js app - Enable if you run 'npm run start'
+# RUN npm run build
 
 # Expose the port the app runs on
 EXPOSE 3000

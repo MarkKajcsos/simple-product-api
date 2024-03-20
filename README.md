@@ -79,6 +79,7 @@ There are two collections in _public_ db:
 - Create next endpoints:
   - _/health_ : see the current status of service
   - _/root_ : return application info
+- Change _express-graphql_ npm package to _graphql-http_.
 
 #### MongoDb
 

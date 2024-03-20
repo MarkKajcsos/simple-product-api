@@ -1,5 +1,5 @@
 mutation {
-  deleteProducts(ids: ["65f7788ffeaedbe1b725d2d3"]) {
+  deleteProducts(ids: ["<your product._id>"]) {
     deleteCount
     success
   }

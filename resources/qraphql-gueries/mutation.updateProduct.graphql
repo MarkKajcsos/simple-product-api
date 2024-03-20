@@ -1,7 +1,7 @@
 mutation {
   updateProduct(
     product: {
-      _id: "65f7788ffeaedbe1b725d2d3"
+      _id: "<your product._id>"
       producerId: "65f7788ffeaedbe1b725d2d1"
       name: "Puli"
       vintage: "2022"
