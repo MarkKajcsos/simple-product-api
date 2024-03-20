@@ -6,17 +6,22 @@ Short description: Build a simple GraphQL product api in TypeScript, which can m
 
 @Side note: Current repo made as an interview excercise.
 
+## Requirements
+
+- Git
+- Docker
+
 ## Preparation
 
-- Download current repo
+### Use Docker
+
+##### Step1: Clone
 
 ```bash
 git clone https://github.com/MarkKajcsos/simple-product-api.git
 ```
 
-## Run
-
-#### Build and start
+##### Step2: Build and start
 
 - Go to root folder of the project
 - Run the following command to build images and start containers
@@ -25,20 +30,21 @@ git clone https://github.com/MarkKajcsos/simple-product-api.git
 docker-compose up --build
 ```
 
-#### Test queries and mutations
+##### Step3: Test queries and mutations
 
-After both (mongodb and single_product_api) started and express server has been loged next `express_server  | Server is running at http://localhost:3000/graphql`.
+After both (mongodb and single_product_api) started and express server has been logged next `express_server  | Server is running at http://localhost:3000/graphql`.
 
-##### Use [GraphQL plugin (VS Code)](https://marketplace.visualstudio.com/items?itemName=orsenkucher.vscode-graphql)
+Use [GraphQL plugin (VS Code)](https://marketplace.visualstudio.com/items?itemName=orsenkucher.vscode-graphql)
 
-- After installig the plugin you need to set up the configutaions
+- After installig the plugin you need to set up the configurations
 
-##### Use [GraphiQL](https://docs.spring.io/spring-graphql/reference/graphiql.html) IDE from browser
+Use [GraphiQL](https://docs.spring.io/spring-graphql/reference/graphiql.html) IDE from browser
 
 - Open [http://localhost/graphql](http://localhost/graphql) in your browser.
-- You can find and try out some sample query and mutation from [resources](./resources/) folder.
 
-#### MongoDB usage
+Both case you can find and try out some sample query and mutation from [resources](./resources/) folder.
+
+##### Step4: Access MongoDB container
 
 - Run the following command to access mongodb docker container.
 
@@ -52,7 +58,10 @@ docker exec -it mongodb mongosh
 use public
 ```
 
-There are two collection in _public_ collection: _products_ and _producers_.
+There are two collections in _public_ db:
+
+- _products_
+- _producers_.
 
 ---
 
@@ -76,12 +85,12 @@ There are two collection in _public_ collection: _products_ and _producers_.
 #### MongoDb
 
 - Find solution to load _producer_ doc into Product.producer field witout data duplication. The _polulate_ and _aggregate_ functions have been tried out without success.
-- Prepare replicaset of mongodb instances (to be able to use session and transactions for more secure operations)
-- Create new db user with password (envoveld configuration file and env variable modifications)
+- Prepare replicaset of mongodb instances (to be **able to use session and transactions** for more secure operations)
+- Create new db user with password (invoveld configuration file and env variable modifications)
 
 #### Logging
 
-- Set midleware logging
+- Set middleware logging
 
 #### GraphQl
 
