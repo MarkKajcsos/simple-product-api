@@ -13,7 +13,7 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
    * @param product 
    * @returns Created product items.
    */
-  async upsertProductAndProducer(product: any): Promise<IProduct> {
+  public async upsertProductAndProducer(product: any): Promise<IProduct> {
     try {
       // Upsert Producer item
       const producerFilter = { name: product.producer.name }
@@ -23,14 +23,17 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
       logger.debug(`New Producer stored in db: ${dbProducer}`)
 
       // // Upsert Product item
+      product.producer = dbProducer._id // product.producer field is ObjectId type
       const productFilter = { name: product.name, vintage: product.vintage, producerId: dbProducer?._id }
-      const updateProduct = { ...product, producerId: dbProducer._id } // TOASK - should exlude product.producer??
+      const updateProduct = { ...product, producerId: dbProducer._id }
       const dbProduct = await Product.findOneAndUpdate(
         productFilter, updateProduct, { upsert: true, returnDocument: 'after' }
       )
 
       logger.debug(`New Product stored in db: ${dbProduct}`)
-      return dbProduct
+            
+      const productWithProducer = await Product.findById(dbProduct._id).populate('producer')
+      return productWithProducer!
     } catch (error) {
       throw new Error(`ProductServiceMongodb.upsertProductAndProducer failed: ${error}`)
     }         
@@ -107,12 +110,12 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
    */
   async getProductById(id: string): Promise<IProduct | null> { 
     try {
-      return await Product.findById(id)
+      return await Product.findById(id).populate('producer')
     } catch (error) {
       throw new Error(`ProductServiceMongodb.getProductById failed: ${error}`)
     }     
 
-  }
+}
 
   /**
    * Get simple Producer by id.
@@ -138,7 +141,7 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
    */
   async getProductsByProducerId(producerId: string): Promise<IProduct[]> {
     try {
-      return await Product.find({ producerId })
+      return await Product.find({ producerId }).populate('producer')
     } catch (error) {
       throw new Error(`ProductServiceMongodb.getProductsByProducerId failed: ${error}`)
     }  
@@ -157,7 +160,8 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
       // Find and update producer item (in 'producers' collection )
       await Producer.findByIdAndUpdate(product.producerId, product.producer, { returnDocument: 'after' })
       // Find and update product
-      return await Product.findByIdAndUpdate(product._id, product, { returnDocument: 'after' })
+      const updatedProduct = await Product.findByIdAndUpdate(product._id, product, { returnDocument: 'after' })
+      return updatedProduct ? updatedProduct?.populate('producer') : null
     } catch (error) {
       throw new Error(`ProductServiceMongodb.updateProduct failed: ${error}`)
     }  

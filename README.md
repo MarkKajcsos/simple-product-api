@@ -11,17 +11,15 @@ Short description: Build a simple GraphQL product api in TypeScript, which can m
 - Git
 - Docker
 
-## Preparation
+## Use Docker
 
-### Use Docker
-
-##### Step1: Clone
+#### Step1: Clone
 
 ```bash
 git clone https://github.com/MarkKajcsos/simple-product-api.git
 ```
 
-##### Step2: Build and start
+#### Step2: Build and start
 
 - Go to root folder of the project
 - Run the following command to build images and start containers
@@ -30,21 +28,21 @@ git clone https://github.com/MarkKajcsos/simple-product-api.git
 docker-compose up --build
 ```
 
-##### Step3: Test queries and mutations
+#### Step3: Test queries and mutations
 
 After both (mongodb and single_product_api) started and express server has been logged next `express_server  | Server is running at http://localhost:3000/graphql`.
 
-Use [GraphQL plugin (VS Code)](https://marketplace.visualstudio.com/items?itemName=orsenkucher.vscode-graphql)
+##### Use [GraphQL plugin (VS Code)](https://marketplace.visualstudio.com/items?itemName=orsenkucher.vscode-graphql)
 
 - After installig the plugin you need to set up the configurations
 
-Use [GraphiQL](https://docs.spring.io/spring-graphql/reference/graphiql.html) IDE from browser
+##### Use [GraphiQL](https://docs.spring.io/spring-graphql/reference/graphiql.html) IDE from browser
 
 - Open [http://localhost/graphql](http://localhost/graphql) in your browser.
 
 Both case you can find and try out some sample query and mutation from [resources](./resources/) folder.
 
-##### Step4: Access MongoDB container
+#### Step4: Access MongoDB container
 
 - Run the following command to access mongodb docker container.
 

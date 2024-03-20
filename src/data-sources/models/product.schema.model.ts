@@ -26,8 +26,8 @@ interface IProduct extends Document {
 const productSchema = new Schema<IProduct>({
   name: { type: String, required: true },
   vintage: { type: String, required: true },
-  producer: { type: producerSchema, required: false }, // TODO - need to populate dinamically
-  producerId: { type: Schema.Types.ObjectId, ref: 'Producer' }
+  producer: { type: Schema.Types.ObjectId, ref: 'Producer' },
+  producerId: { type: Schema.Types.ObjectId }
 }, { strict: false }) // Allow or ignore data that's not defined in the schema (for importing purpose)
 
 // Set productSchema unique indetifiers

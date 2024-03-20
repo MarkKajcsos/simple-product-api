@@ -8,11 +8,9 @@
     "start": "node dist/index.js",
     "build": "tsc",
     "dev": "nodemon ./src/index.ts",
-    "foo": "tsnd ./test.ts",
     "lint": "eslint \"src/**/*.ts\"",
     "lintfix": "eslint \"src/**/*.ts\" --fix"
   },
-  "keywords": [],
   "author": "Mark Kajcsos",
   "license": "ISC",
   "dependencies": {
