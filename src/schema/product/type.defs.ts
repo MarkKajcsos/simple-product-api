@@ -37,12 +37,12 @@ export const typeDefs = gql`
 
   type Query {
     productById(id: ID!): Product
-    productsByProducerId(id: ID!): [ProductWithoutProducer]
+    productsByProducerId(id: ID!): [ProductWithoutProducer!]!
   }
 
   type Mutation {
-    createProducts(products: [ProductCreateInput!]): [Product]
-    updateProduct(product: ProductUpdateInput!): Product
+    createProducts(products: [ProductCreateInput!]): [Product!]!
+    updateProduct(product: ProductUpdateInput!): Product!
     deleteProducts(ids: [ID!]): DeletionResult!
     productSyncronization: Boolean!
   }  

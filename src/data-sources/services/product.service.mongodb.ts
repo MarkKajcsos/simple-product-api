@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import { IProduct, Producer, Product } from '../../model/product.schema.model'
 import logger from '../../utils/logger'
-import { IProduct, Producer, Product } from '../models/product.schema.model'
 import { IProductService } from './product.service'
 
 
@@ -13,7 +13,7 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
    * @param product 
    * @returns Created product items.
    */
-  public async upsertProductAndProducer(product: any): Promise<IProduct> {
+  public async upsertProductAndProducer(product: IProduct): Promise<IProduct> {
     try {
       // Upsert Producer item
       const producerFilter = { name: product.producer.name }
@@ -34,8 +34,11 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
             
       const productWithProducer = await Product.findById(dbProduct._id).populate('producer')
       return productWithProducer!
-    } catch (error) {
-      throw new Error(`ProductServiceMongodb.upsertProductAndProducer failed: ${error}`)
+    } catch (error: any) {
+      if(error.message){
+        error.message = `ProductServiceMongodb.upsertProductAndProducer failed: ${error.message}`
+      }
+      throw error
     }         
   }
 
@@ -45,7 +48,7 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
    * @param products 
    * @returns Created product items.
    */
-  public async createProducts(products: any[]): Promise<any[]> {
+  public async createProducts(products: IProduct[]): Promise<IProduct[]> {
     try {      
       const results: any[] = []
       for(const item of products){
@@ -53,9 +56,12 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
         results.push(newItem)
       }
       return results
-    } catch (error) {
-      throw new Error(`ProductServiceMongodb.createProducts failed: ${error}`)
-    }      
+    } catch (error: any) {
+      if(error.message){
+        error.message = `ProductServiceMongodb.createProducts failed: ${error.message}`
+      }
+      throw error 
+    }
   }
 
   /**    
@@ -111,11 +117,13 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
   async getProductById(id: string): Promise<IProduct | null> { 
     try {
       return await Product.findById(id).populate('producer')
-    } catch (error) {
-      throw new Error(`ProductServiceMongodb.getProductById failed: ${error}`)
-    }     
-
-}
+    } catch (error: any) {
+      if(error.message){
+        error.message = `ProductServiceMongodb.getProductById failed: ${error.message}`
+      }
+      throw error      
+    }
+  }
 
   /**
    * Get simple Producer by id.
@@ -126,10 +134,12 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
   async getProducerById(id: string): Promise<IProduct | null> { 
     try {
       return await Producer.findById(id)
-    } catch (error) {
-      throw new Error(`ProductServiceMongodb.getProducerById failed: ${error}`)
-    }     
-
+    } catch (error: any) {
+      if(error.message){
+        error.message = `ProductServiceMongodb.getProducerById failed: ${error.message}`
+      }
+      throw error      
+    }
   }
 
   /**
@@ -142,9 +152,12 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
   async getProductsByProducerId(producerId: string): Promise<IProduct[]> {
     try {
       return await Product.find({ producerId }).populate('producer')
-    } catch (error) {
-      throw new Error(`ProductServiceMongodb.getProductsByProducerId failed: ${error}`)
-    }  
+    } catch (error: any) {
+      if(error.message){
+        error.message = `ProductServiceMongodb.getProductsByProducerId failed: ${error.message}`
+      }
+      throw error      
+    }
   }
 
   /**
@@ -157,14 +170,15 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
    */
   async updateProduct(product: IProduct): Promise<IProduct | null> {
     try {
-      // Find and update producer item (in 'producers' collection )
-      await Producer.findByIdAndUpdate(product.producerId, product.producer, { returnDocument: 'after' })
       // Find and update product
       const updatedProduct = await Product.findByIdAndUpdate(product._id, product, { returnDocument: 'after' })
       return updatedProduct ? updatedProduct?.populate('producer') : null
-    } catch (error) {
-      throw new Error(`ProductServiceMongodb.updateProduct failed: ${error}`)
-    }  
+    } catch (error: any) {
+      if(error.message){
+        error.message = `ProductServiceMongodb.updateProduct failed: ${error.message}`
+      }
+      throw error      
+    }
   }
 
   /**
@@ -175,31 +189,16 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
    */
   async deleteProducts(ids: string[]): Promise<{success: boolean; deleteCount: number}> {
     try {
-      // Get producers' id
-      const products = await Product.find({ _id:{ $in:ids } })    
-      const producerIds = products.map(product => product.producerId.toString())
-      logger.debug(producerIds)
-
       // Delete Products by ids argument
       const deleteResult = await Product.deleteMany({ _id:{ $in:ids } })
-
-      // Delete Producers by producerIds if there aren't reference from 'products' collection
-      for(const id of producerIds){
-        const products = await Product.find({ producerId: id })         
-        logger.debug(id) 
-        logger.debug(products) 
-        if(products != null && products.length === 0){
-          logger.debug(`No more prodod with producerId: ${id}`) 
-          await Producer.deleteOne({ id })
-        }
-      }
       const result = { success: deleteResult.acknowledged, deleteCount: deleteResult.deletedCount }
       logger.debug(result)
       return result
-    } catch (error) {
-      throw new Error(`ProductServiceMongodb.deleteProducts failed: ${error}`)
-    }  
-  }    
-
-
+    } catch (error: any) {
+      if(error.message){
+        error.message = `ProductServiceMongodb.deleteProducts failed: ${error.message}`
+      }
+      throw error      
+    }
+  }
 }

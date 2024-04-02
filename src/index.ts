@@ -10,9 +10,7 @@ import logger from './utils/logger'
 
 
 const app = express()
-export const dbClient = new MongoDBClient(config.mongoDB)
-
-
+const dbClient = new MongoDBClient(config.mongoDB)
 const schema = makeExecutableSchema({ typeDefs, resolvers })
 
 
@@ -32,16 +30,16 @@ app.use('/graphql', graphqlHTTP({
  */
 export async function shutdown(): Promise<void> {
   try {
-    await dbClient.close();
+    await dbClient.close()
   } catch (e) {
-    logger.error(e);
+    logger.error(e)
   }
-  logger.info(`APP: shutdown completed.`);
+  logger.info('APP: shutdown completed.')
 }
 
 // handle unexpected app shutdown
 process.on('SIGINT', () => {
-  logger.info(`APP: shutdown with signal SIGINT`)
+  logger.info('APP: shutdown with signal SIGINT')
   shutdown()
     .then(() => {
       process.exit(0)
@@ -53,7 +51,7 @@ process.on('SIGINT', () => {
 
 // handle unexpected app shutdowns
 process.on('SIGTERM', () => {
-  logger.info(`APP: shutdown with signal SIGTERM`)
+  logger.info('APP: shutdown with signal SIGTERM')
   shutdown()
     .then(() => {
       process.exit(0)
@@ -79,8 +77,11 @@ process.on('unhandledRejection', (reason: unknown | null | undefined, promise: P
   })
 })
 
-// Start the server
-app.listen(config.app.port, async () => {
+(async () => {
   await dbClient.connect()
-  console.log(`Server is running at http://${config.app.host}:${config.app.port}/graphql`)
+  app.listen(config.app.port, async () => {
+    logger.info(`Server is running at http://${config.app.host}:${config.app.port}/graphql`)
+  })
+})().catch((e: Error) => {
+  logger.error(`Server running has failed: ${e.message}`)
 })
