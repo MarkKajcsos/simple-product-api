@@ -69,22 +69,14 @@ export class ProductImporter {
    */
   private transformData(data: any[]) {
     return data.map(item => {
-      const newItem: any = {
+      const newItem = {
         vintage: item.Vintage,
         name: item['Product Name'],
         producer: {
           name: item.Producer,
           country: item.Country,
           region: item.Region
-        },
-        colour: item.Colour,
-        quantity: item.Quantity,
-        format: item.Format,
-        price_GBP: item['Price (GBP)'],
-        duty: item.Duty,
-        availability: item.Availability,
-        conditions: item.Conditions,
-        imageUrl: item.ImageUrl
+        }
       }
       return newItem
     })
