@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import csvParser from 'csv-parser'
 import https from 'https'
-import { Transform } from 'stream'
+import { Transform, Writable, pipeline } from 'stream'
 import config from '../../utils/config'
 import logger from '../../utils/logger'
 import { ProductServiceMongodb } from './product.service.mongodb'
@@ -36,16 +36,12 @@ class BatchTransformer extends Transform {
   }
 }
 
-
-export class ProductImporter {
-  private readonly batchSize: number
-  private readonly fetchUrl: string
+class ProductSaver extends Writable {
   private productService: ProductServiceMongodb
 
-  constructor(){
+  constructor() {
+    super({objectMode: true})
     this.productService = new ProductServiceMongodb()
-    this.batchSize = config.importer.batchSize
-    this.fetchUrl = config.importer.productCsvUrl
   }
 
   /**
@@ -82,48 +78,60 @@ export class ProductImporter {
     })
   }
 
+  // _write function is called when data is written to the stream
+  async _write(chunk, encoding, callback) {
+    try {
+      // Execute the provided code
+      const transformedData = this.transformData(chunk)
+      const uniqueProducts = this.getUniqueProducts(transformedData)
+      // Store current batch of data
+      await this.productService.createProducts(uniqueProducts)
+      // Signal that writing the data was successful
+      callback()
+    } catch (error) {
+      // If an error occurs, signal that writing the data failed
+      callback(error)
+    }
+  }
+
+}
+
+export class ProductImporter {
+  private readonly batchSize: number
+  private readonly fetchUrl: string
+  private productService: ProductServiceMongodb
+  private batchTransformer: BatchTransformer
+  private productSaver: ProductSaver
+
+  constructor(){
+    this.batchSize = config.importer.batchSize
+    this.fetchUrl = config.importer.productCsvUrl
+    this.productService = new ProductServiceMongodb()
+    this.batchTransformer = new BatchTransformer(this.batchSize)
+    this.productSaver = new ProductSaver()
+  }
+
   /**
    * Main function to fetch CSV, process and upsert into MongoDB.
    */
   private async productSyncronization(): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
+    return new Promise<boolean>(() => {
       https.get(this.fetchUrl, response => {
-        let isProcessingCompleted = false;
-
-        response.pipe(csvParser())
-          .pipe(new BatchTransformer(this.batchSize))
-          .on('data', async (data: any[]) => {
-            if (!isProcessingCompleted) {
-              // Temporarily pause the stream to handle backpressure
-              response.pause();
-              try {
-                const transformedData = this.transformData(data);
-                const uniqueProducts = this.getUniqueProducts(transformedData);
-                // Store current batch of data
-                await this.productService.createProducts(uniqueProducts);
-                // Resume the stream after async operation
-                response.resume()
-              } catch (error) {
-                isProcessingCompleted = true // Prevent further processing
-                reject(error)
-              }
+        pipeline(
+          response,
+          csvParser(),
+          this.batchTransformer,
+          this.productSaver,
+          (err) => {
+            if (err) {
+              logger.error('ProductSyncronization pipeline failed:', err)
+            } else {
+              logger.info('ProductSyncronization pipeline succeeded')
             }
-          })
-          .on('end', () => {
-            if (!isProcessingCompleted) {
-              logger.info('CSV processing completed');
-              resolve(true)
-            }
-          })
-          .on('error', (err) => {
-            logger.error('Error processing CSV:', err);
-            reject(err)
-          });
-      }).on('error', (err) => {
-        logger.error('HTTPS request error:', err);
-        reject(err)
-      });
-    });
+          }          
+        )
+      })
+    })
   }
 
   /**
