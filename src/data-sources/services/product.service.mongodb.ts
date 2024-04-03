@@ -19,7 +19,7 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
       const producers =  [...new Set(products.map((product: IProduct) => product.producer))]
       const producerNames  = [...new Set(producers.map((producer: IProducer) => producer.name))]
 
-      // Upsert producers
+      // Create producer bulk operaitons
       const producerBulkOperations: any[] = producers.map((producer: IProducer) => {return {
         findOneAndUpdate: {
           filter: { name: producer.name }, 
@@ -27,6 +27,8 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
           options: { upsert: true, returnDocument: 'after' }
         }
       }})
+
+      // Upsert producers
       await Producer.bulkWrite(producerBulkOperations)
 
       // Get upserted producers' id-name dictionary
@@ -39,7 +41,7 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
       // Set products' producerId and producer filed
       products.map((product: IProduct) => {product.producerId = producerNameId[product.producer.name]})
 
-      // Upsert products
+      // Create product bulk operaitons
       const productBulkOperations: any[] = products.map((product: IProduct) => {return {
         findOneAndUpdate: {
           filter: { name: product.name, vintage: product.vintage, producerId: product.producerId }, // product identifiers
@@ -47,15 +49,16 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
           options: { upsert: true, returnDocument: 'after' }
         }
       }})
+
+      // Upsert products
       const productUpsertResult = await Product.bulkWrite(productBulkOperations)
 
       // Get upserted products' id
       const upsertedProductIds: string[] = Object.values(productUpsertResult.upsertedIds)
 
       // Find and return upserted products
-      const results: IProduct[] = await Product.find({ _id:{ $in:upsertedProductIds } })
-      return results
-      
+      return await Product.find({ _id:{ $in:upsertedProductIds } })
+
     } catch (error: any) {
       if(error.message){
         error.message = `ProductServiceMongodb.createProducts failed: ${error.message}`
@@ -100,7 +103,6 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
 
   /**
    * Get list of Product filtered by 'producerId'.
-   * Doesn't need to attach the producer doc to product.producer field.
    *
    * @param producerId 
    * @returns Product[].
@@ -127,8 +129,7 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
   async updateProduct(product: IProduct): Promise<IProduct | null> {
     try {
       // Find and update product
-      const updatedProduct = await Product.findByIdAndUpdate(product._id, product, { returnDocument: 'after' })
-      return updatedProduct
+      return await Product.findByIdAndUpdate(product._id, product, { returnDocument: 'after' })
     } catch (error: any) {
       if(error.message){
         error.message = `ProductServiceMongodb.updateProduct failed: ${error.message}`
@@ -138,7 +139,7 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
   }
 
   /**
-   * Delete Products and Producers by Product' ids.
+   * Delete Products by ids.
    *
    * @param ids 
    * @returns Success: boolean, deleteCount: number.

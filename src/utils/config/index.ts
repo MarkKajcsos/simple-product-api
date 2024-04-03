@@ -11,5 +11,4 @@ config.app = Object.assign(
   config.app
 )
 
-
 export default config

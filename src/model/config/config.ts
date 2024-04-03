@@ -6,7 +6,6 @@ export enum ENVIRONMENT {
   INTEGRATION = 'INTEGRATION',
 }
 
-
 export interface Config {
   app: AppConfig
   mongoDB: MongoDBConfig
