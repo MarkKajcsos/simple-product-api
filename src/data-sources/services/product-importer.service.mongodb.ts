@@ -65,7 +65,7 @@ class ProductSaver extends Writable {
    * @param data
    * @returns Void.
    */
-  private transformData(data: any[]) {
+  private parseData(data: any[]) {
     return data.map(item => {
       const newItem = {
         vintage: item.Vintage,
@@ -80,22 +80,19 @@ class ProductSaver extends Writable {
     })
   }
 
-  // _write function is called when data is written to the stream
+  // Transform data, make unique list and save
   async _write(chunk: any, encoding: any, callback: any) {
     try {
-      // Execute the provided code
-      const transformedData = this.transformData(chunk)
-      const uniqueProducts = this.getUniqueProducts(transformedData)
+      // Execute data parsing and make unique list
+      const products = this.parseData(chunk)
+      const uniqueProducts = this.getUniqueProducts(products)
       // Store current batch of data
       await this.productService.createProducts(uniqueProducts)
-      // Signal that writing the data was successful
       callback()
     } catch (error) {
-      // If an error occurs, signal that writing the data failed
       callback(error)
     }
   }
-
 }
 
 export class ProductImporter {
@@ -140,12 +137,10 @@ export class ProductImporter {
    * @returns True immediately.
    */
   public async startImport(): Promise<boolean> {
-    try {
-      this.productSyncronization() // async call
-      return true
-    } catch (error) {
-      throw new Error(`ProductServiceMongodb.productSyncronization failed: ${error}`)
-    }
+    this.productSyncronization()  // async call
+      .then(() => logger.info('Product data import finished'))
+      .catch((reason: any) => logger.error('Product data import failed: ' + reason))
+    return true
   }  
 
 }
