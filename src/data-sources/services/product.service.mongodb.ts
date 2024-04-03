@@ -8,41 +8,6 @@ import { IProductService } from './product.service'
 export class ProductServiceMongodb implements IProductService<IProduct> {
 
   /**
-   * Save single Product with containing Producer item.
-   *
-   * @param product 
-   * @returns Created product items.
-   */
-  public async upsertProductAndProducer(product: IProduct): Promise<IProduct> {
-    try {
-      // Upsert Producer item
-      const producerFilter = { name: product.producer.name }
-      const dbProducer = await Producer.findOneAndUpdate(
-        producerFilter, product.producer, { upsert: true, returnDocument: 'after' }
-      )
-      logger.debug(`New Producer stored in db: ${dbProducer}`)
-
-      // // Upsert Product item
-      product.producer = dbProducer._id // product.producer field is ObjectId type
-      const productFilter = { name: product.name, vintage: product.vintage, producerId: dbProducer?._id }
-      const updateProduct = { ...product, producerId: dbProducer._id }
-      const dbProduct = await Product.findOneAndUpdate(
-        productFilter, updateProduct, { upsert: true, returnDocument: 'after' }
-      )
-
-      logger.debug(`New Product stored in db: ${dbProduct}`)
-            
-      const productWithProducer = await Product.findById(dbProduct._id).populate('producer')
-      return productWithProducer!
-    } catch (error: any) {
-      if(error.message){
-        error.message = `ProductServiceMongodb.upsertProductAndProducer failed: ${error.message}`
-      }
-      throw error
-    }         
-  }
-
-  /**
    * Save Product items.
    *
    * @param products 
@@ -50,12 +15,9 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
    */
   public async createProducts(products: IProduct[]): Promise<IProduct[]> {
     try {      
-      
-
       // Get producers out of products (unique list)
       const producers =  [...new Set(products.map((product: IProduct) => product.producer))]
       const producerNames  = [...new Set(producers.map((producer: IProducer) => producer.name))]
-      const productNames  = products.map((product: IProduct) => product.name)
 
       // Upsert producers
       const producerBulkOperations: any[] = producers.map((producer: IProducer) => {return {
@@ -74,7 +36,6 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
         return acc
       }, {})    
 
-
       // Set products' producerId filed
       products.map((product: IProduct) => {product.producerId = producerNameId[product.producer.name]})
 
@@ -87,11 +48,14 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
         }
       }})
       const productUpsertResult = await Product.bulkWrite(productBulkOperations)
+
+      // Get upserted products' id
       const upsertedProductIds: string[] = Object.values(productUpsertResult.upsertedIds)
 
-      // Get upserted products
+      // Find and return upserted products
       const results: IProduct[] = await Product.find({ _id:{ $in:upsertedProductIds } })
       return results
+      
     } catch (error: any) {
       if(error.message){
         error.message = `ProductServiceMongodb.createProducts failed: ${error.message}`
