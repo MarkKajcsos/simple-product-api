@@ -133,7 +133,6 @@ export class ProductImporter {
 
   /**
    * Start Product importing from external source.
-   *
    * @returns True immediately.
    */
   public async startImport(): Promise<boolean> {
