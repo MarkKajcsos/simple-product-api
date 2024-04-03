@@ -1,6 +1,6 @@
 {
   "name": "simple_product_api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Simple GraphQL product api in TypeScript, which can manage product and producer entities using MongoDB",
   "main": "./dist/index.js",
   "scripts": {
