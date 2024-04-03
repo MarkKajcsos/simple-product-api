@@ -1,4 +1,4 @@
-import winston from 'winston';
+import winston from 'winston'
 
 // Configure the logger
 const logger = winston.createLogger({
@@ -9,4 +9,4 @@ const logger = winston.createLogger({
   ]
 })
 
-export default logger;
+export default logger

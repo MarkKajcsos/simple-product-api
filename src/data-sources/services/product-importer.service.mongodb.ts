@@ -40,14 +40,15 @@ class ProductSaver extends Writable {
   private productService: ProductServiceMongodb
 
   constructor() {
-    super({objectMode: true})
+    super({ objectMode: true })
     this.productService = new ProductServiceMongodb()
   }
 
   /**
    * Function to group data by Vintage + Product Name + Producer.
+   *
    * @param data
-   * @returns void
+   * @returns Void.
    */
   private getUniqueProducts(data: any[]) {
     const uniqueProducts: Record<string, any> = {}
@@ -60,8 +61,9 @@ class ProductSaver extends Writable {
 
   /**
    * Function to transform data structure to fit product/producer schema.
+   *
    * @param data
-   * @returns void
+   * @returns Void.
    */
   private transformData(data: any[]) {
     return data.map(item => {
@@ -134,7 +136,8 @@ export class ProductImporter {
 
   /**
    * Start Product importing from external source.
-   * @returns true immediately
+   *
+   * @returns True immediately.
    */
   public async startImport(): Promise<boolean> {
     try {
