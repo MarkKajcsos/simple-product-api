@@ -28,7 +28,7 @@ const productSchema = new Schema<IProduct>({
   vintage: { type: String, required: true },
   producer: { type: Schema.Types.ObjectId, ref: 'Producer' },
   producerId: { type: Schema.Types.ObjectId }
-}, { strict: false }) // Allow or ignore data that's not defined in the schema (for importing purpose)
+}, { strict: true }) // Don't allow data that's not defined in the schema (in data importing case)
 
 // Set productSchema unique indetifiers
 productSchema.index({ vintage: 1, name: 1, producerId: 1 }, { unique: true })
