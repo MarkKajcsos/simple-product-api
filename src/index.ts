@@ -37,45 +37,6 @@ export async function shutdown(): Promise<void> {
   logger.info('APP: shutdown completed.')
 }
 
-// handle unexpected app shutdown
-process.on('SIGINT', () => {
-  logger.info('APP: shutdown with signal SIGINT')
-  shutdown()
-    .then(() => {
-      process.exit(0)
-    })
-    .catch(() => {
-      process.exit(1)
-    })
-})
-
-// handle unexpected app shutdowns
-process.on('SIGTERM', () => {
-  logger.info('APP: shutdown with signal SIGTERM')
-  shutdown()
-    .then(() => {
-      process.exit(0)
-    })
-    .catch(() => {
-      process.exit(1)
-    })
-})
-
-// handle uncaughtException
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-process.on('uncaughtException', (ex: Error) => {
-  shutdown().finally(() => {
-    process.exit(1)
-  })
-})
-
-// handle unhandledRejection
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-process.on('unhandledRejection', (reason: unknown | null | undefined, promise: Promise<unknown>) => {
-  shutdown().finally(() => {
-    process.exit(1)
-  })
-})
 
 (async () => {
   await dbClient.connect()

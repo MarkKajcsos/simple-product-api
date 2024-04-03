@@ -79,7 +79,7 @@ class ProductSaver extends Writable {
   }
 
   // _write function is called when data is written to the stream
-  async _write(chunk, encoding, callback) {
+  async _write(chunk: any, encoding: any, callback: any) {
     try {
       // Execute the provided code
       const transformedData = this.transformData(chunk)
@@ -99,14 +99,12 @@ class ProductSaver extends Writable {
 export class ProductImporter {
   private readonly batchSize: number
   private readonly fetchUrl: string
-  private productService: ProductServiceMongodb
   private batchTransformer: BatchTransformer
   private productSaver: ProductSaver
 
   constructor(){
     this.batchSize = config.importer.batchSize
     this.fetchUrl = config.importer.productCsvUrl
-    this.productService = new ProductServiceMongodb()
     this.batchTransformer = new BatchTransformer(this.batchSize)
     this.productSaver = new ProductSaver()
   }
@@ -135,7 +133,7 @@ export class ProductImporter {
   }
 
   /**
-   * Start Product importing from external source
+   * Start Product importing from external source.
    * @returns true immediately
    */
   public async startImport(): Promise<boolean> {

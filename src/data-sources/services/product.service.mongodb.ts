@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { IProduct, Producer, Product } from '../../model/product.schema.model'
+import mongoose from 'mongoose'
+import { IProducer, IProduct, Producer, Product } from '../../model/product.schema.model'
 import logger from '../../utils/logger'
 import { IProductService } from './product.service'
-
 
 
 export class ProductServiceMongodb implements IProductService<IProduct> {
@@ -50,17 +50,53 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
    */
   public async createProducts(products: IProduct[]): Promise<IProduct[]> {
     try {      
-      const results: any[] = []
-      for(const item of products){
-        const newItem = await this.upsertProductAndProducer(item)
-        results.push(newItem)
-      }
+      
+
+      // Get producers out of products (unique list)
+      const producers =  [...new Set(products.map((product: IProduct) => product.producer))]
+      const producerNames  = [...new Set(producers.map((producer: IProducer) => producer.name))]
+      const productNames  = products.map((product: IProduct) => product.name)
+
+      // Upsert producers
+      const producerBulkOperations: any[] = producers.map((producer: IProducer) => {return {
+        findOneAndUpdate: {
+          filter: { name: producer.name }, 
+          update: producer,
+          options: { upsert: true, returnDocument: 'after' }
+        }
+      }})
+      await Producer.bulkWrite(producerBulkOperations)
+
+      // Get upserted producers' id-name dictionary
+      const upsertedProducers = await Producer.find({ name: { $in: producerNames } },  { name: 1, _id: 1 })
+      const producerNameId: { [key: string]: mongoose.Types.ObjectId } = upsertedProducers.reduce((acc: any, current) => {
+        acc[current.name] = current._id
+        return acc
+      }, {})    
+
+
+      // Set products' producerId filed
+      products.map((product: IProduct) => {product.producerId = producerNameId[product.producer.name]})
+
+      // Upsert products
+      const productBulkOperations: any[] = products.map((product: IProduct) => {return {
+        findOneAndUpdate: {
+          filter: { name: product.name, vintage: product.vintage, producerId: product.producerId }, // product identifiers
+          update: product,
+          options: { upsert: true, returnDocument: 'after' }
+        }
+      }})
+      const productUpsertResult = await Product.bulkWrite(productBulkOperations)
+      const upsertedProductIds: string[] = Object.values(productUpsertResult.upsertedIds)
+
+      // Get upserted products
+      const results: IProduct[] = await Product.find({ _id:{ $in:upsertedProductIds } })
       return results
     } catch (error: any) {
       if(error.message){
         error.message = `ProductServiceMongodb.createProducts failed: ${error.message}`
       }
-      throw error 
+      throw error
     }
   }
 
@@ -121,7 +157,7 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
       if(error.message){
         error.message = `ProductServiceMongodb.getProductById failed: ${error.message}`
       }
-      throw error      
+      throw error
     }
   }
 
@@ -138,7 +174,7 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
       if(error.message){
         error.message = `ProductServiceMongodb.getProducerById failed: ${error.message}`
       }
-      throw error      
+      throw error
     }
   }
 
@@ -156,7 +192,7 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
       if(error.message){
         error.message = `ProductServiceMongodb.getProductsByProducerId failed: ${error.message}`
       }
-      throw error      
+      throw error
     }
   }
 
@@ -177,7 +213,7 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
       if(error.message){
         error.message = `ProductServiceMongodb.updateProduct failed: ${error.message}`
       }
-      throw error      
+      throw error
     }
   }
 
@@ -198,7 +234,7 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
       if(error.message){
         error.message = `ProductServiceMongodb.deleteProducts failed: ${error.message}`
       }
-      throw error      
+      throw error
     }
   }
 }
