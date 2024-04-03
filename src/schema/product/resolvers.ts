@@ -1,10 +1,9 @@
 export const resolvers = {
-  // TOASK: Should use field provider or rather populate function on Product model.
-  // producer: {
-  //   producer: async (parent: any, args: any, { dataSources }: any) => {
-  //     return await dataSources.productService.getProducerById(parent.producerId)
-  //   },
-  // },
+  Product: {
+    producer: async (parent: any, args: any, { dataSources }: any) => {
+      return await dataSources.productService.getProducerById(parent.producerId)
+    },
+  },
   Query: {
     productById: async (parent: any, args: any, { dataSources }: any) => {
       return await dataSources.productService.getProductById(args.id)

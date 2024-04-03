@@ -36,7 +36,7 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
         return acc
       }, {})    
 
-      // Set products' producerId filed
+      // Set products' producerId and producer filed
       products.map((product: IProduct) => {product.producerId = producerNameId[product.producer.name]})
 
       // Upsert products
@@ -64,50 +64,6 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
     }
   }
 
-  /**    
-   * NOTE: This function is not used with the current setup
-   * Function created to save Product items by session to ensure
-   * the transaction if every items stored successfully .
-   *
-   * @param products 
-   * @returns Products Created products from db.
-   */
-  async createProductsBySession(products: IProduct[]): Promise<IProduct[]> {
-    // Start a session
-    const session = await Producer.startSession()
-    const result: IProduct[] = []
-    try {
-      // Start a transaction
-      await session.startTransaction()
-        
-      for(const product of products){
-        // Create new Producer item
-        const newProducer = await Producer.create([product.producer], { session }) // Create a child object
-
-        // Set Product item with proper 'producerId' and 'Producer' fields
-        const newProduct = { 
-          ...product,
-          producerId: newProducer[0]._id,
-          // producer: newProducer
-        }
-
-        // Create new Product item
-        const createProduct = await Product.create([newProduct], { session })
-        result.push(createProduct[0])
-      }
-
-      // Commit the transaction if everything succeeds
-      await session.commitTransaction()
-        
-      return result
-    } catch (error) {
-      await session.abortTransaction()
-      throw new Error(`ProductServiceMongodb.createProducts: ${error}`)
-    } finally {
-      session.endSession()
-    }
-  }
-
   /**
    * Get simple Product by id.
    *
@@ -116,7 +72,7 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
    */
   async getProductById(id: string): Promise<IProduct | null> { 
     try {
-      return await Product.findById(id).populate('producer')
+      return await Product.findById(id)
     } catch (error: any) {
       if(error.message){
         error.message = `ProductServiceMongodb.getProductById failed: ${error.message}`
@@ -151,7 +107,7 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
    */
   async getProductsByProducerId(producerId: string): Promise<IProduct[]> {
     try {
-      return await Product.find({ producerId }).populate('producer')
+      return await Product.find({ producerId })
     } catch (error: any) {
       if(error.message){
         error.message = `ProductServiceMongodb.getProductsByProducerId failed: ${error.message}`
@@ -172,7 +128,7 @@ export class ProductServiceMongodb implements IProductService<IProduct> {
     try {
       // Find and update product
       const updatedProduct = await Product.findByIdAndUpdate(product._id, product, { returnDocument: 'after' })
-      return updatedProduct ? updatedProduct?.populate('producer') : null
+      return updatedProduct
     } catch (error: any) {
       if(error.message){
         error.message = `ProductServiceMongodb.updateProduct failed: ${error.message}`
